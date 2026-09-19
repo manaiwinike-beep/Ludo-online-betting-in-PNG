@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ludo Arena Demo</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#080b18;color:#fff}
+nav{position:sticky;top:0;background:#0d1328;border-bottom:1px solid #293454;padding:15px 5%;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;z-index:5}
+.logo{font-weight:900;letter-spacing:2px;color:#38bdf8}nav a{color:#ddd;text-decoration:none;margin:0 8px}
+.container{width:92%;max-width:1100px;margin:auto}.hero{padding:60px 0;display:grid;grid-template-columns:1.2fr 1fr;gap:30px;align-items:center}
+h1{font-size:clamp(40px,7vw,72px);margin:10px 0}.accent{color:#38bdf8}.muted{color:#aab5d6;line-height:1.6}
+.card{background:#11172b;border:1px solid #293454;border-radius:18px;padding:22px}
+button{padding:12px 18px;border:0;border-radius:10px;background:#8b5cf6;color:#fff;font-weight:bold;cursor:pointer;margin:4px}
+button:hover{filter:brightness(1.2)}.outline{background:transparent;border:1px solid #445070}
+.pill{background:#243052;border-radius:20px;padding:6px 10px;font-size:12px;color:#c4b5fd}
+.grid,.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}section{padding:30px 0}
+.board{display:grid;grid-template-columns:repeat(11,1fr);gap:4px}.cell{aspect-ratio:1;background:#202944;border-radius:4px}.cell:nth-child(3n){background:#31265a}.cell:nth-child(5n){background:#123c50}
+.balance{color:#22c55e}.stat strong{font-size:28px;color:#facc15}
+footer{text-align:center;padding:35px;color:#94a3b8;border-top:1px solid #293454;margin-top:30px}
+#toast{position:fixed;right:20px;bottom:20px;background:#18213b;border:1px solid #445070;padding:14px 18px;border-radius:10px;display:none}
+.modal{display:none;position:fixed;inset:0;background:#000b;align-items:center;justify-content:center;padding:20px;z-index:10}.modalbox{background:#11172b;border:1px solid #445070;border-radius:18px;padding:25px;max-width:450px;width:100%}
+@media(max-width:750px){.hero,.grid,.stats{grid-template-columns:1fr}nav{justify-content:center}}
+</style>
+</head>
+<body>
+<nav>
+<div class="logo">LUDO ARENA</div>
+<div><a href="#play">Play</a><a href="#wallet">Wallet</a><a href="#referral">Referral</a><a href="#admin">Admin</a></div>
+<div class="pill">Coins: <span id="balance">1250</span></div>
+</nav>
+
+<main class="container">
+<section class="hero">
+<div>
+<span class="pill">VIRTUAL-COIN DEMO</span>
+<h1>Play. Compete.<br><span class="accent">Have Fun.</span></h1>
+<p class="muted">A mobile-friendly interactive Ludo Arena prototype. All money-related functions are simulated with virtual coins.</p>
+<button onclick="go('play')">Play Ludo</button>
+<button class="outline" onclick="go('wallet')">Open Wallet</button>
+</div>
+<div class="card">
+<h2>Live Arena</h2><p class="muted">Demo Ludo board</p>
+<div class="board" id="board"></div>
+<br><button onclick="rollDice()">Roll Dice</button>
+<span class="pill" id="dice">Dice: —</span>
+</div>
+</section>
+
+<section id="play">
+<h2>Game Lobby</h2>
+<div class="grid">
+<div class="card"><span class="pill">2 PLAYERS</span><h3>Quick Match</h3><p class="muted">Entry: 100 virtual coins</p><button onclick="join(100,'Quick Match')">Join Match</button></div>
+<div class="card"><span class="pill">4 PLAYERS</span><h3>Pro Room</h3><p class="muted">Entry: 250 virtual coins</p><button onclick="join(250,'Pro Room')">Join Match</button></div>
+<div class="card"><span class="pill">PRIVATE</span><h3>Create Room</h3><p class="muted">Create a practice room.</p><button onclick="toast('Demo room created!')">Create Room</button></div>
+</div>
+</section>
+
+<section id="wallet">
+<h2>Wallet</h2>
+<div class="card">
+<p class="muted">Your demo balance</p>
+<h1 class="balance"><span id="walletBalance">1250</span> coins</h1>
+<button onclick="addCoins()">Add Demo Coins</button>
+<button class="outline" onclick="withdraw()">Withdraw</button>
+<p class="muted">No real-money payments or bank transfers are connected.</p>
+</div>
+</section>
+
+<section id="referral">
+<h2>Referral Center</h2>
+<div class="card">
+<h3>Referral Code: <span class="accent">THORO-DEMO</span></h3>
+<p class="muted">Referral rewards are simulated with virtual coins only.</p>
+<button onclick="copyCode()">Copy & Share</button>
+</div>
+</section>
+
+<section id="admin">
+<h2>Admin Overview</h2>
+<div class="stats">
+<div class="card stat"><p class="muted">Demo Players</p><strong>128</strong></div>
+<div class="card stat"><p class="muted">Active Rooms</p><strong>12</strong></div>
+<div class="card stat"><p class="muted">Virtual Coins</p><strong>84.5K</strong></div>
+</div>
+</section>
+</main>
+
+<footer>Ludo Arena Demo — virtual coins only.</footer>
+
+<div id="toast"></div>
+<div class="modal" id="modal"><div class="modalbox"><h2 id="modalTitle"></h2><p class="muted" id="modalText"></p><button onclick="closeModal()">Close</button></div></div>
+
+<script>
+let balance=1250;
+function sync(){document.getElementById('balance').textContent=balance;document.getElementById('walletBalance').textContent=balance}
+function go(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+function toast(msg){let x=document.getElementById('toast');x.textContent=msg;x.style.display='block';clearTimeout(window.tt);window.tt=setTimeout(()=>x.style.display='none',2500)}
+function join(cost,name){if(balance<cost){toast('Not enough virtual coins.');return}balance-=cost;sync();openModal('Match Joined',name+' started. '+cost+' virtual coins were used.')}
+function addCoins(){balance+=500;sync();toast('500 demo coins added!')}
+function withdraw(){openModal('Demo Withdrawal','Real-money withdrawals are disabled in this prototype.')}
+function copyCode(){if(navigator.clipboard)navigator.clipboard.writeText('THORO-DEMO').then(()=>toast('Referral code copied!'));else toast('Referral code: THORO-DEMO')}
+function rollDice(){document.getElementById('dice').textContent='Dice: '+(Math.floor(Math.random()*6)+1)}
+function openModal(t,m){document.getElementById('modalTitle').textContent=t;document.getElementById('modalText').textContent=m;document.getElementById('modal').style.display='flex'}
+function closeModal(){document.getElementById('modal').style.display='none'}
+for(let i=0;i<121;i++){let c=document.createElement('div');c.className='cell';document.getElementById('board').appendChild(c)}
+sync();
+</script>
+</body>
+</html>
